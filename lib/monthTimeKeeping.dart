@@ -84,7 +84,8 @@ class _MonthTimeKeepingState extends State<MonthTimeKeeping> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => DetailCheckin(date : entry['DATE'].toString())),
+                                    builder: (context) => DetailCheckin(
+                                        date: entry['DATE'].toString())),
                               );
                             },
                             child: const Text(

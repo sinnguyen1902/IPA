@@ -4,9 +4,27 @@ import 'package:appcheckin/changepassword.dart';
 import 'package:appcheckin/main.dart';
 import 'package:appcheckin/userIDLogin.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class Home extends StatelessWidget {
+class Home extends StatefulWidget {
   const Home({super.key});
+
+  @override
+  State<Home> createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
+  Future<void> logout() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.remove('isLoggedIn');
+    UserData.iEmpNo = '';
+    UserData.nName = '';
+    UserData.nDept = '';
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const Login()),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -84,13 +102,7 @@ class Home extends StatelessWidget {
               Button(
                 title: "Đăng Xuất",
                 onPressed: () {
-                  UserData.iEmpNo = '';
-                  UserData.nName = '';
-                  UserData.nDept = '';
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => const Login()),
-                  );
+                  logout();
                 },
               ),
             ],

@@ -7,6 +7,7 @@ import 'package:appcheckin/userIDLogin.dart';
 import 'package:flutter/material.dart';
 import 'package:device_info/device_info.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   runApp(const MyApp());
@@ -31,6 +32,42 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
+  @override
+  void initState() {
+    super.initState();
+    checkLoginStatus().then((isLoggedIn) {
+      if (isLoggedIn) {
+        setUserLogined();
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => Home()),
+        );
+      }
+    });
+  }
+
+  Future<void> saveLoginStatus(
+      bool isLoggedIn, String iEmpNo, String nName, String nDept) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    SharedPreferences _prefs = await SharedPreferences.getInstance();
+    prefs.setBool('isLoggedIn', isLoggedIn);
+    _prefs.setString('iEmpNo', iEmpNo);
+    _prefs.setString('nName', nName);
+    _prefs.setString('nDept', nDept);
+  }
+
+  Future<bool> checkLoginStatus() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getBool('isLoggedIn') ?? false;
+  }
+
+  Future<void> setUserLogined() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    UserData.iEmpNo = prefs.getString('iEmpNo')!;
+    UserData.nName = prefs.getString('nName')!;
+    UserData.nDept = prefs.getString('nDept')!;
+  }
+
   @override
   Widget build(BuildContext context) {
     // Getting the full screen height
@@ -84,6 +121,8 @@ class _LoginState extends State<Login> {
             UserData.iEmpNo = data['i_emp_no'];
             UserData.nName = data['n_name'];
             UserData.nDept = data['n_dept'];
+            saveLoginStatus(
+                true, data['i_emp_no'], data['n_name'], data['n_dept']);
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => Home()),
